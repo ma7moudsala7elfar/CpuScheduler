@@ -1,0 +1,615 @@
+/* ========================================================
+   CPU Scheduling Simulator — Dark Theme Stylesheet
+   ======================================================== */
+
+/* ---------- Imports ---------- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+/* ---------- CSS Custom Properties ---------- */
+:root {
+    --bg-body: #0d1b2a;
+    --bg-card: #112240;
+    --bg-card-alt: #0f1d35;
+    --bg-input: #0b1526;
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-focus: #378ADD;
+    --text-primary: #e6f1ff;
+    --text-secondary: #8899aa;
+    --text-muted: #5a6e82;
+    --accent: #378ADD;
+    --accent-hover: #4e9dee;
+    --danger: #e74c5f;
+    --danger-hover: #f25e70;
+    --success: #1D9E75;
+    --warning: #BA7517;
+    --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.35);
+    --shadow-card: 0 4px 16px rgba(0, 0, 0, 0.25);
+    --radius: 12px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ---------- Reset & Base ---------- */
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 15px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-body);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* ---------- Utility ---------- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+/* ---------- Header ---------- */
+.app-header {
+    padding: 32px 0 12px;
+    text-align: center;
+}
+
+.app-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #378ADD 0%, #1D9E75 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.app-header p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 6px;
+}
+
+/* ---------- Top Grid (2 columns) ---------- */
+.top-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 24px;
+    margin-top: 28px;
+}
+
+/* ---------- Card ---------- */
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-card);
+    transition: box-shadow var(--transition);
+}
+
+.card:hover {
+    box-shadow: var(--shadow-lg);
+}
+
+.card-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-primary);
+}
+
+.card-title .icon {
+    font-size: 1.15rem;
+}
+
+/* ---------- Process Table ---------- */
+.process-table-wrap {
+    overflow-x: auto;
+}
+
+.process-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.9rem;
+}
+
+.process-table thead th {
+    background: var(--bg-card-alt);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    font-size: 0.75rem;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.process-table thead th:first-child {
+    border-radius: var(--radius-sm) 0 0 0;
+}
+
+.process-table thead th:last-child {
+    border-radius: 0 var(--radius-sm) 0 0;
+    text-align: center;
+}
+
+.process-table tbody td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.process-table tbody td:last-child {
+    text-align: center;
+}
+
+.process-table tbody tr {
+    transition: background var(--transition);
+}
+
+.process-table tbody tr:hover {
+    background: rgba(55, 138, 221, 0.06);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.empty-state .empty-icon {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+    opacity: 0.5;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 10px 20px;
+    border: none;
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: all var(--transition);
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.btn-primary {
+    background: var(--accent);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--accent-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 14px rgba(55, 138, 221, 0.35);
+}
+
+.btn-danger {
+    background: transparent;
+    color: var(--danger);
+    border: 1px solid rgba(231, 76, 95, 0.3);
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+.btn-danger:hover {
+    background: var(--danger);
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1px solid var(--border-subtle);
+}
+
+.btn-outline:hover {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+.btn-run {
+    background: linear-gradient(135deg, #378ADD, #1D9E75);
+    color: #fff;
+    font-size: 0.95rem;
+    padding: 13px 28px;
+    border-radius: var(--radius-sm);
+    width: 100%;
+    margin-top: 6px;
+}
+
+.btn-run:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(55, 138, 221, 0.4);
+}
+
+/* ---------- Algorithm Toggle ---------- */
+.algo-toggle {
+    display: flex;
+    gap: 0;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    border: 1px solid var(--border-subtle);
+    margin-bottom: 20px;
+}
+
+.algo-toggle .algo-btn {
+    flex: 1;
+    padding: 11px 0;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.85rem;
+    background: var(--bg-card-alt);
+    color: var(--text-secondary);
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition);
+    text-align: center;
+}
+
+.algo-toggle .algo-btn.active {
+    background: var(--accent);
+    color: #fff;
+}
+
+.algo-toggle .algo-btn:hover:not(.active) {
+    background: rgba(55, 138, 221, 0.12);
+    color: var(--text-primary);
+}
+
+/* ---------- Form Controls ---------- */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 11px 14px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xs);
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.form-control:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 3px rgba(55, 138, 221, 0.15);
+}
+
+.form-control::placeholder {
+    color: var(--text-muted);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.btn-group-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.btn-group-controls .btn {
+    flex: 1;
+}
+
+/* ---------- Error Message ---------- */
+.error-banner {
+    background: rgba(231, 76, 95, 0.1);
+    border: 1px solid rgba(231, 76, 95, 0.3);
+    border-radius: var(--radius-xs);
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    color: var(--danger);
+    font-size: 0.88rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---------- Results Section ---------- */
+.results-section {
+    margin-top: 36px;
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* ---------- Gantt Chart ---------- */
+.gantt-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-card);
+}
+
+.gantt-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 16px;
+}
+
+.gantt-bars {
+    display: flex;
+    width: 100%;
+    height: 52px;
+    border-radius: var(--radius-xs);
+    overflow: hidden;
+    position: relative;
+}
+
+.gantt-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
+    position: relative;
+    transition: filter 0.2s;
+    min-width: 32px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.gantt-bar:hover {
+    filter: brightness(1.15);
+    z-index: 2;
+}
+
+.gantt-bar::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 1px;
+    background: rgba(0, 0, 0, 0.25);
+}
+
+.gantt-bar:last-child::after {
+    display: none;
+}
+
+/* Idle gap bar */
+.gantt-bar.idle-gap {
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.03),
+        rgba(255,255,255,0.03) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 0.7rem;
+}
+
+.gantt-ticks {
+    display: flex;
+    width: 100%;
+    margin-top: 6px;
+    position: relative;
+}
+
+.gantt-tick {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+    position: absolute;
+    transform: translateX(-50%);
+}
+
+.gantt-tick:first-child {
+    transform: translateX(0);
+}
+
+/* ---------- Metric Cards ---------- */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    padding: 22px;
+    text-align: center;
+    box-shadow: var(--shadow-card);
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.metric-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.metric-value {
+    font-size: 1.9rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), #1D9E75);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+}
+
+.metric-card:nth-child(2) .metric-value {
+    background: linear-gradient(135deg, #1D9E75, #639922);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.metric-card:nth-child(3) .metric-value {
+    background: linear-gradient(135deg, #BA7517, #D85A30);
+    -webkit-background-clip: text;
+    background-clip: text;
+}
+
+.metric-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 6px;
+}
+
+/* ---------- Result Table ---------- */
+.result-table-wrap {
+    background: var(--bg-card);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+}
+
+.result-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+}
+
+.result-table thead th {
+    background: var(--bg-card-alt);
+    color: var(--text-secondary);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-size: 0.73rem;
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.result-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-variant-numeric: tabular-nums;
+}
+
+.result-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.result-table tbody tr {
+    transition: background var(--transition);
+}
+
+.result-table tbody tr:hover {
+    background: rgba(55, 138, 221, 0.06);
+}
+
+.process-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 600;
+}
+
+.process-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* ---------- Footer ---------- */
+.app-footer {
+    text-align: center;
+    padding: 40px 0 28px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+    html { font-size: 14px; }
+
+    .top-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .gantt-bar {
+        font-size: 0.7rem;
+        min-width: 24px;
+    }
+}

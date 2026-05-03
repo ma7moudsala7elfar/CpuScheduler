@@ -1,0 +1,323 @@
+@model CpuScheduler.Models.SchedulerViewModel
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CPU Scheduling Simulator — FCFS &amp; SJF</title>
+    <meta name="description" content="Interactive CPU Scheduling Simulator supporting First-Come First-Served and Shortest Job First algorithms with Gantt chart visualization." />
+    <link rel="stylesheet" href="~/css/scheduler.css" />
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ==================== HEADER ==================== -->
+        <header class="app-header">
+            <h1>⚙ CPU Scheduling Simulator</h1>
+            <p>Visualize FCFS &amp; SJF (Non-Preemptive) scheduling algorithms</p>
+        </header>
+
+        <!-- ==================== ERROR BANNER ==================== -->
+        @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+        {
+            <div class="error-banner" id="errorBanner">
+                <span>⚠</span> @Model.ErrorMessage
+            </div>
+        }
+
+        <!-- ==================== TOP GRID ==================== -->
+        <div class="top-grid">
+
+            <!-- ===== LEFT: Process Table ===== -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">📋</span> Process Queue
+                </div>
+
+                @if (Model.Processes.Count > 0)
+                {
+                    <div class="process-table-wrap">
+                        <table class="process-table" id="processTable">
+                            <thead>
+                                <tr>
+                                    <th>Process</th>
+                                    <th>Arrival Time</th>
+                                    <th>Burst Time</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.Processes.Count; i++)
+                                {
+                                    var proc = Model.Processes[i];
+                                    <tr>
+                                        <td><strong>P@(proc.Id)</strong></td>
+                                        <td>@proc.ArrivalTime</td>
+                                        <td>@proc.BurstTime</td>
+                                        <td>
+                                            <form method="post" asp-action="RemoveProcess" style="display:inline">
+                                                <input type="hidden" name="index" value="@i" />
+                                                <input type="hidden" name="SelectedAlgorithm" value="@Model.SelectedAlgorithm" />
+                                                <button type="submit" class="btn btn-danger" id="removeProcess_@i" title="Remove process">✕</button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-state">
+                        <div class="empty-icon">📭</div>
+                        <p>No processes added yet.</p>
+                        <p style="margin-top:4px;font-size:0.82rem;">Use the controls on the right to add processes.</p>
+                    </div>
+                }
+            </div>
+
+            <!-- ===== RIGHT: Controls ===== -->
+            <div class="card">
+                <div class="card-title">
+                    <span class="icon">🎛</span> Controls
+                </div>
+
+                <!-- Algorithm Toggle -->
+                <div class="algo-toggle" id="algoToggle">
+                    <button type="button"
+                            class="algo-btn @(Model.SelectedAlgorithm == "FCFS" ? "active" : "")"
+                            data-algo="FCFS"
+                            id="algoFCFS">
+                        FCFS
+                    </button>
+                    <button type="button"
+                            class="algo-btn @(Model.SelectedAlgorithm == "SJF" ? "active" : "")"
+                            data-algo="SJF"
+                            id="algoSJF">
+                        SJF
+                    </button>
+                </div>
+
+                <!-- Add Process Form -->
+                <form method="post" asp-action="AddProcess" id="addProcessForm">
+                    <input type="hidden" name="SelectedAlgorithm" value="@Model.SelectedAlgorithm" id="selectedAlgorithm" />
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="arrivalTime">Arrival Time</label>
+                            <input type="number"
+                                   class="form-control"
+                                   name="arrivalTime"
+                                   id="arrivalTime"
+                                   min="0"
+                                   value="0"
+                                   placeholder="0"
+                                   required />
+                        </div>
+                        <div class="form-group">
+                            <label for="burstTime">Burst Time</label>
+                            <input type="number"
+                                   class="form-control"
+                                   name="burstTime"
+                                   id="burstTime"
+                                   min="1"
+                                   value="1"
+                                   placeholder="1"
+                                   required />
+                        </div>
+                    </div>
+
+                    <div class="btn-group-controls">
+                        <button type="submit" class="btn btn-primary" id="addProcessBtn">
+                            ＋ Add Process
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Clear & Run -->
+                <div class="btn-group-controls" style="margin-top: 14px;">
+                    <form method="post" asp-action="ClearAll" style="flex:1;display:flex;">
+                        <button type="submit" class="btn btn-outline" id="clearAllBtn" style="width:100%;">
+                            🗑 Clear All
+                        </button>
+                    </form>
+                </div>
+
+                <form method="post" asp-action="Run" style="margin-top:10px;">
+                    <input type="hidden" name="SelectedAlgorithm" value="@Model.SelectedAlgorithm" id="selectedAlgorithmRun" />
+                    <button type="submit" class="btn btn-run" id="runBtn">
+                        ▶ Run @Model.SelectedAlgorithm Algorithm
+                    </button>
+                </form>
+            </div>
+
+        </div><!-- /top-grid -->
+
+        <!-- ==================== RESULTS ==================== -->
+        @if (Model.Results != null && Model.Results.Count > 0)
+        {
+            <section class="results-section" id="resultsSection">
+                <div class="section-title">
+                    <span>📊</span> Scheduling Results — @Model.SelectedAlgorithm
+                </div>
+
+                <!-- Gantt Chart -->
+                <div class="gantt-card" id="ganttChart">
+                    <div class="gantt-label">Gantt Chart</div>
+
+                    @{
+                        int totalSpan = Model.TotalExecutionTime;
+                        int minStart = Model.Results.Min(r => r.StartTime);
+
+                        // Build an ordered list of bars including idle gaps
+                        var orderedResults = Model.Results.OrderBy(r => r.StartTime).ToList();
+
+                        // Map process IDs to indices for coloring
+                        var processIds = Model.Processes.Select(p => $"P{p.Id}").ToList();
+                    }
+
+                    <div class="gantt-bars">
+                        @{
+                            int prevEnd = 0;
+                            foreach (var r in orderedResults)
+                            {
+                                // Idle gap
+                                if (r.StartTime > prevEnd)
+                                {
+                                    double gapWidth = (double)(r.StartTime - prevEnd) / totalSpan * 100;
+                                    <div class="gantt-bar idle-gap"
+                                         style="width:@(gapWidth.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;">
+                                        idle
+                                    </div>
+                                }
+
+                                double barWidth = (double)r.BurstTime / totalSpan * 100;
+                                int pIdx = processIds.IndexOf(r.ProcessId);
+                                if (pIdx < 0) pIdx = 0;
+
+                                <div class="gantt-bar"
+                                     data-process-index="@pIdx"
+                                     style="width:@(barWidth.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;"
+                                     title="@r.ProcessId | Start: @r.StartTime | End: @r.FinishTime">
+                                    @r.ProcessId
+                                </div>
+
+                                prevEnd = r.FinishTime;
+                            }
+                        }
+                    </div>
+
+                    <!-- Time Ticks -->
+                    <div class="gantt-ticks" style="height:20px; position:relative;">
+                        @{
+                            // Collect unique time points
+                            var ticks = new SortedSet<int> { 0 };
+                            foreach (var r in orderedResults)
+                            {
+                                ticks.Add(r.StartTime);
+                                ticks.Add(r.FinishTime);
+                            }
+
+                            foreach (var t in ticks)
+                            {
+                                double leftPct = totalSpan > 0 ? (double)t / totalSpan * 100 : 0;
+                                <span class="gantt-tick"
+                                      style="left:@(leftPct.ToString("F2", System.Globalization.CultureInfo.InvariantCulture))%;">
+                                    @t
+                                </span>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <!-- Metric Cards -->
+                <div class="metrics-grid">
+                    <div class="metric-card" id="metricAvgWait">
+                        <div class="metric-value">@Model.AverageWaitingTime</div>
+                        <div class="metric-label">Avg Waiting Time</div>
+                    </div>
+                    <div class="metric-card" id="metricAvgTurnaround">
+                        <div class="metric-value">@Model.AverageTurnaroundTime</div>
+                        <div class="metric-label">Avg Turnaround Time</div>
+                    </div>
+                    <div class="metric-card" id="metricTotalExec">
+                        <div class="metric-value">@Model.TotalExecutionTime</div>
+                        <div class="metric-label">Total Execution Time</div>
+                    </div>
+                </div>
+
+                <!-- Detailed Result Table -->
+                <div class="result-table-wrap" id="resultTable">
+                    <table class="result-table">
+                        <thead>
+                            <tr>
+                                <th>Process</th>
+                                <th>Arrival</th>
+                                <th>Burst</th>
+                                <th>Start</th>
+                                <th>Finish</th>
+                                <th>Waiting Time</th>
+                                <th>Turnaround Time</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var r in Model.Results)
+                            {
+                                int pIdx = processIds.IndexOf(r.ProcessId);
+                                if (pIdx < 0) pIdx = 0;
+
+                                <tr>
+                                    <td>
+                                        <span class="process-badge">
+                                            <span class="process-dot" data-process-index="@pIdx"></span>
+                                            @r.ProcessId
+                                        </span>
+                                    </td>
+                                    <td>@r.ArrivalTime</td>
+                                    <td>@r.BurstTime</td>
+                                    <td>@r.StartTime</td>
+                                    <td>@r.FinishTime</td>
+                                    <td>@r.WaitingTime</td>
+                                    <td>@r.TurnaroundTime</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        }
+
+        <footer class="app-footer">
+            CPU Scheduling Simulator &middot; ASP.NET Core MVC
+        </footer>
+
+    </div><!-- /container -->
+
+    <script src="~/js/scheduler.js"></script>
+
+    @* Keep algorithm toggle in sync across all forms *@
+    <script>
+        (function () {
+            const algoBtns = document.querySelectorAll('.algo-btn');
+            const hiddenFields = document.querySelectorAll('input[name="SelectedAlgorithm"]');
+            const runBtn = document.getElementById('runBtn');
+
+            algoBtns.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    const algo = btn.getAttribute('data-algo');
+                    hiddenFields.forEach(function (f) { f.value = algo; });
+                    if (runBtn) {
+                        runBtn.textContent = '▶ Run ' + algo + ' Algorithm';
+                    }
+                });
+            });
+        })();
+    </script>
+
+</body>
+</html>
